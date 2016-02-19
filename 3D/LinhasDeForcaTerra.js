@@ -11,7 +11,7 @@ ON_DAED["3D"].LinhasDeForcaTerra = function (scene, nGeraLinhas, nTamanhoExtensa
     var wrapperLinhas = new THREE.Object3D();
     var wrapperGlobal = new THREE.Object3D();
 
-    var texturaTerra = THREE.ImageUtils.loadTexture('imgs/texturas/terra/map.jpg');
+    var texturaTerra = THREE.ImageUtils.loadTexture('lib/on-daed-js/imgs/texturas/terra/map.jpg');
 
     var esfera = new THREE.Mesh(new THREE.SphereGeometry(raioEsfera, 64, 32), new THREE.MeshBasicMaterial({map: texturaTerra}));
 
@@ -22,10 +22,10 @@ ON_DAED["3D"].LinhasDeForcaTerra = function (scene, nGeraLinhas, nTamanhoExtensa
     objetoEsfera.add(rotEixoEsfera);
 
     wrapperGlobal.add(objetoEsfera);
-
+    
     var eixoLinhas = new THREE.Object3D();
     eixoLinhas.add(wrapperLinhas);
-
+    
     objetoEsfera.add(eixoLinhas);
 
     rotEixoEsfera.rotation.z = -Math.PI / 2;
@@ -175,13 +175,9 @@ ON_DAED["3D"].LinhasDeForcaTerra = function (scene, nGeraLinhas, nTamanhoExtensa
     }
 
     for (var i = 0; i < nGeraLinhas; i++) {
-        var modX = Math.random();
-        var modY = Math.random();
-        var modZ = Math.random();
-        
-        var xs = modX * (xMax - xMin) + xMin;
-        var ys = modY * (yMax - yMin) + yMin;
-        var zs = modZ * (zMax - zMin) + zMin;
+        var xs = Math.random() * (xMax - xMin) + xMin;
+        var ys = Math.random() * (yMax - yMin) + yMin;
+        var zs = Math.random() * (zMax - zMin) + zMin;
 
         geraPonto(xs, ys, zs, 'x');
         geraPonto(xs, ys, zs, 'y');
@@ -214,7 +210,7 @@ ON_DAED["3D"].LinhasDeForcaTerra = function (scene, nGeraLinhas, nTamanhoExtensa
     var linhas = [];
 
     function selecionaCor(xn, yn, zn) {
-        return xn >= 0 ? 0xFF0000 : 0x0000FF;
+        return xn >= 0 ? 0xF72444 : 0x6262FF;
     }
 
     function constroiLinhaDeForca(ponto, geoExt) {
@@ -328,12 +324,12 @@ ON_DAED["3D"].LinhasDeForcaTerra = function (scene, nGeraLinhas, nTamanhoExtensa
         rotEixoEsfera.rotation.z = -Math.PI / 2 + n;
         eixoLinhas.rotation.z = n;
     };
-
-    o.getRotacaoAtual = function () {
+    
+    o.getRotacaoAtual = function() {
         return esfera.rotation.y;
     };
-
-    o.setVelocidadeRotacao = function (n) {
+    
+    o.setVelocidadeRotacao = function(n) {
         velocidadeRotacao = n;
     };
 
@@ -341,7 +337,7 @@ ON_DAED["3D"].LinhasDeForcaTerra = function (scene, nGeraLinhas, nTamanhoExtensa
         if (wrapperGlobal.visible) {
             esfera.rotation.y += velocidadeRotacao;
             wrapperLinhas.rotation.x = esfera.rotation.y;
-
+            
             ventoRotacionado.set(ventoX, ventoY, ventoZ);
             ventoRotacionado = MathHelper.rotateVector(ventoRotacionado, new THREE.Vector3(1, 0, 0), -wrapperLinhas.rotation.x);
 

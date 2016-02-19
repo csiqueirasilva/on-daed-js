@@ -95,11 +95,11 @@
 
             flareMat.side = THREE.DoubleSide;
             flareMat.transparent = true;
-            flareMat.map = new THREE.ImageUtils.loadTexture("models/sol/uv-test2.png");
+            flareMat.map = new THREE.ImageUtils.loadTexture("lib/on-daed-js/models/sol/uv-test2.png");
             flareMat.depthWrite = false;
             flareMat.color = new THREE.Color(0xFF0000);
 
-            $('#load-modal').data('loadOBJMTL')('sol', 'models/sol/solarflare.obj', 'models/sol/solarflare.mtl', function (object) {
+            $('#load-modal').data('loadOBJMTL')('sol', 'lib/on-daed-js/models/sol/solarflare.obj', 'lib/on-daed-js/models/sol/solarflare.mtl', function (object) {
 
                 object.scale.multiplyScalar(50);
 

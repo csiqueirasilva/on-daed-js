@@ -1,9 +1,12 @@
 ON_DAED["3D"].GraficoGlobo = function (scene, camera, raioPlaneta, control, obj) {
 
     var geometriaEsfera = new THREE.SphereGeometry(raioPlaneta, 64, 32);
-    camera.position.z = raioPlaneta + 500;
 
-    if(control) {
+    if (camera) {
+        camera.position.z = raioPlaneta + 500;
+    }
+
+    if (control) {
         control.maxDistance = 3000;
         control.minDistance = 100;
         control.noPan = true;
@@ -24,10 +27,10 @@ ON_DAED["3D"].GraficoGlobo = function (scene, camera, raioPlaneta, control, obj)
 
     atmosfera.scale.multiplyScalar(1.05);
 
-    var texturaTerra = THREE.ImageUtils.loadTexture('imgs/texturas/terra/map.jpg');
-    var bumpTerra = THREE.ImageUtils.loadTexture('imgs/texturas/terra/bump.jpg');
-    var specularTerra = THREE.ImageUtils.loadTexture('imgs/texturas/terra/specular.jpg');
-    var texturaEsferaCeleste = THREE.ImageUtils.loadTexture('imgs/texturas/esfera-celeste/panorama.jpg');
+    var texturaTerra = THREE.ImageUtils.loadTexture('lib/on-daed-js/imgs/texturas/terra/map.jpg');
+    var bumpTerra = THREE.ImageUtils.loadTexture('lib/on-daed-js/imgs/texturas/terra/bump.jpg');
+    var specularTerra = THREE.ImageUtils.loadTexture('lib/on-daed-js/imgs/texturas/terra/specular.jpg');
+    var texturaEsferaCeleste = THREE.ImageUtils.loadTexture('lib/on-daed-js/imgs/texturas/esfera-celeste/panorama.jpg');
 
     texturaEsferaCeleste.minFilter = texturaTerra.minFilter = specularTerra.minFilter = bumpTerra.minFilter = THREE.LinearFilter;
 
@@ -69,23 +72,25 @@ ON_DAED["3D"].GraficoGlobo = function (scene, camera, raioPlaneta, control, obj)
             })
             );
 
-    var escalaEsferaCeleste = 50;
+    if (camera) {
+        var escalaEsferaCeleste = 50;
 
-    var esferaCelesteGiro = (Math.PI / 2) * 0.81;
+        var esferaCelesteGiro = (Math.PI / 2) * 0.81;
 
-    esferaCelesteObj.rotation.z = esferaCelesteGiro;
-    esferaCelesteObj.scale.multiplyScalar(escalaEsferaCeleste * escalaFirmamento);
+        esferaCelesteObj.rotation.z = esferaCelesteGiro;
+        esferaCelesteObj.scale.multiplyScalar(escalaEsferaCeleste * escalaFirmamento);
 
-    ON_DAED["3D"].register(scene, esferaCelesteObj, function () {
-        esferaCelesteObj.position.copy(camera.position);
-    }, true);
+        ON_DAED["3D"].register(scene, esferaCelesteObj, function () {
+            esferaCelesteObj.position.copy(camera.position);
+        }, true);
 
-    var esferaCeleste = new THREE.Object3D();
+        var esferaCeleste = new THREE.Object3D();
 
-    esferaCeleste.scale.multiplyScalar(escalaFirmamento);
+        esferaCeleste.scale.multiplyScalar(escalaFirmamento);
 
-    var wrapperEsferaCeleste = new THREE.Object3D();
-    wrapperEsferaCeleste.add(esferaCeleste);
+        var wrapperEsferaCeleste = new THREE.Object3D();
+        wrapperEsferaCeleste.add(esferaCeleste);
+    }
 
     var longitudes = [];
 
@@ -112,6 +117,7 @@ ON_DAED["3D"].GraficoGlobo = function (scene, camera, raioPlaneta, control, obj)
     linhasImaginarias.add(greenwich);
 
     ON_DAED["3D"].register(scene, objetoTerra, function () {
+        objetoTerra.rotation.y += 0.01;
     }, true);
 
     var geometriaLinha = new THREE.Geometry();
@@ -371,8 +377,7 @@ ON_DAED["3D"].GraficoGlobo = function (scene, camera, raioPlaneta, control, obj)
     var dataGeo = {};
     var dataPais = {};
 
-    function cadData(geo, inverse) {
-        var coordInverse = inverse ? -1 : 1;
+    function cadData(geo) {
         
         if (isoCountries[geo.c]) {
             if (dataGeo[geo.g] === undefined) {
@@ -391,11 +396,11 @@ ON_DAED["3D"].GraficoGlobo = function (scene, camera, raioPlaneta, control, obj)
 
                 dataGeo[geo.g] = new THREE.Line(
                         geometriaLinha.clone(), mat)
-                    ;
+                        ;
 
                 objetoTerra.add(dataGeo[geo.g]);
                 dataGeo[geo.g].rotation.z = parseFloat(coords[0]) * Math.PI / 180;
-                dataGeo[geo.g].rotation.y = coordInverse * parseFloat(coords[1]) * Math.PI / 180;
+                dataGeo[geo.g].rotation.y = parseFloat(coords[1]) * Math.PI / 180;
             }
 
             dataGeo[geo.g].scale.x += 0.01;
@@ -420,32 +425,8 @@ ON_DAED["3D"].GraficoGlobo = function (scene, camera, raioPlaneta, control, obj)
         esferaCelesteObj.visible = t;
     };
 
-    o.mostrar = function() {
-        for(var k in dataGeo) {
-            dataGeo[k].visible = true;
-        }
-    };
-    
-    o.girar = function(coord) {
-        if(dataGeo[coord]) {
-            scene.updateMatrixWorld();
-            var v = dataGeo[coord].geometry.vertices[1].clone();
-            v.applyMatrix4(dataGeo[coord].matrixWorld);
-            v.x -= 20;
-            v.normalize();
-            camera.position.copy(v.multiplyScalar(raioPlaneta * 4));
-            camera.lookAt(new THREE.Vector3(0, 0, 0));
-        }
-    };
-    
-    o.esconder = function(coords) {
-        for(var k in dataGeo) {
-            if(coords.indexOf(k) === -1) {
-                dataGeo[k].visible = false;
-            } else {
-                dataGeo[k].visible = true;
-            }
-        }
+    o.getObjetoTerra = function () {
+        return objetoTerra;
     };
 
     $('.hover-label-text').show();

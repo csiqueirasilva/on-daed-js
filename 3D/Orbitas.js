@@ -48,7 +48,7 @@ ON_DAED['3D'].Orbitas = function (scene, url) {
 
         $('#select-orbitas').attr("disabled", true);
 
-        $.getJSON("js/daed/orbitas/" + url, {}, function (dataSelecionada) {
+        $.getJSON("lib/on-daed-js/orbitas/" + url, {}, function (dataSelecionada) {
 
             $.getJSON(dataSelecionada[1],
                     function (data) {

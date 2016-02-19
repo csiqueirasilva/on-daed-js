@@ -14,7 +14,7 @@
     ON_DAED["3D"].objects = [];
     ON_DAED["3D"].intersectObjects = [];
 
-    ON_DAED["3D"].workerLogica = new Worker('js/daed/worker.js');
+    ON_DAED["3D"].workerLogica = new Worker('lib/on-daed-js/worker.js');
 
     // private
     var texturesTextLabel = {};

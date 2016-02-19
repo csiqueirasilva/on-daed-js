@@ -485,15 +485,22 @@
 
         scene.add(camera);
 
-        window.onresize = function () {
-            // RESIZE Main Screen
-            var WIDTH = element !== window ? element.offsetWidth : window.innerWidth,
-                    HEIGHT = element !== window ? element.offsetHeight : window.innerHeight;
-            camera.aspect = WIDTH / HEIGHT;
-            camera.updateProjectionMatrix();
+		(function() {
+			var width = window.innerWidth;
+			var height = window.innerHeight;
 
-            renderer.setSize(WIDTH, HEIGHT);
-        };
+			setInterval(function () {
+				if ((width != window.innerWidth) || (height != window.innerHeight)) {
+					width = window.innerWidth;
+					height = window.innerHeight;
+
+					camera.aspect = width / height;
+					camera.updateProjectionMatrix();
+
+					renderer.setSize(width, height);
+				}
+			}, 300);
+		})();
 
         // controls, return camera control if any
         if (controls instanceof Function) {

@@ -383,7 +383,11 @@ ThreeHelper.invalidIntersection = function (intersections) {
 
 	ThreeHelper.Intersect = {};
 	
-	function onMouseClick( event ) {
+	ThreeHelper.Intersect.NoIntersect = function () {
+		document.body.style.cursor = "default";
+	};
+	
+	function onMouse( event ) {
 		
 		// calculate mouse position in normalized device coordinates
 		// (-1 to +1) for both components
@@ -399,28 +403,45 @@ ThreeHelper.invalidIntersection = function (intersections) {
 			// calculate objects intersecting the picking ray/
 			var intersects = raycaster.intersectObjects( ThreeHelper.Intersect.Objects );
 			
-			for(var i = 0; i < intersects.length; i++) {
-				if(intersects[i].object.intersectClickCallback instanceof Function) {
-					intersects[i].object.intersectClickCallback(intersects[i]);
+			if(intersects.length > 0) {
+				if(intersects[0].object.IntersectCallback instanceof Object && intersects[0].object.IntersectCallback[event.type] instanceof Function) {
+					intersects[0].object.IntersectCallback[event.type](intersects[0]);
 				}
+			} else if(ThreeHelper.Intersect.NoIntersect instanceof Function) {
+				ThreeHelper.Intersect.NoIntersect();
 			}
 	
 		}
 	}
 
-	ThreeHelper.Intersect.AddClick = function (objects, camera) {
+	ThreeHelper.Intersect.Add = function (objects, camera) {
 			
 		ThreeHelper.Intersect.Enabled = true;
 		ThreeHelper.Intersect.Objects = objects || [];
 		ThreeHelper.Intersect.Camera = camera;
 		
-		window.addEventListener( 'click', onMouseClick, false );	
-		
 	};
 
+	ThreeHelper.Intersect.BindClick = function () {
+		window.addEventListener( 'click', onMouse, false );
+	}
+	
 	ThreeHelper.Intersect.RemoveClick = function () {
+		window.removeEventListener( 'click', onMouse );	
+	};
+
+	ThreeHelper.Intersect.BindMouseMove = function () {
+		window.addEventListener( 'mousemove', onMouse, false );
+	}
+	
+	ThreeHelper.Intersect.RemoveMouseMove = function () {
+		window.removeEventListener( 'mousemove', onMouse );	
+	};
+
+	ThreeHelper.Intersect.Remove = function () {
 		ThreeHelper.Intersect.Objects = null;
-		window.removeEventListener( 'click', onMouseClick );	
+		window.removeEventListener( 'click', onMouse );	
+		window.removeEventListener( 'mousemove', onMouse );	
 	};
 	
 })();

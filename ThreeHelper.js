@@ -448,6 +448,54 @@ ThreeHelper.invalidIntersection = function (intersections) {
 
 (function () {
 	
+	ThreeHelper.Sprite = {};
+	
+	ThreeHelper.Sprite.FromText = function (txt) {
+		var canvas = document.createElement('canvas');
+		var ctx = canvas.getContext('2d');
+		
+		var tam = 50;
+    
+		txt = txt.toUpperCase();
+    
+		ctx.font= tam + "px Verdana";
+		
+		var metrics = ctx.measureText(txt);
+	
+		canvas.width = metrics.width;
+		
+		canvas.height = tam;
+    
+		var x = 0;
+		var y = canvas.height * 0.5;
+	
+		ctx.font= tam + "px Verdana";
+		ctx.textBaseline = 'middle';
+		ctx.fillStyle="#000000";
+		ctx.fillText(txt, x, y);
+		
+		ctx.font= tam + "px Verdana";
+		ctx.strokeStyle="#ffffff";
+		ctx.lineWidth = tam * 0.02;
+		ctx.strokeText(txt, x, y);
+    	
+		var texture = new THREE.Texture(canvas);
+		texture.needsUpdate = true;
+		
+		var sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+			map: texture
+		}));
+		
+		sprite.scale.x = 10;
+		sprite.scale.y = 10 * tam / metrics.width;
+		
+		return sprite;
+	};
+	
+})();
+
+(function () {
+	
 	ThreeHelper.Billboard = {};
 	
 	ThreeHelper.Billboard.Objects = [];

@@ -123,9 +123,9 @@
     };
 
     ON_DAED["3D"].criarSol = function (scene) {
-        
+
         var tamanho = 90;
-        
+
         var sol = new THREE.Mesh(
                 new THREE.SphereGeometry(tamanho, 64, 32),
                 new THREE.MeshBasicMaterial({
@@ -151,8 +151,8 @@
         var factSolAnimacao = 0;
 
         var flares = [];
-        
-        function addFlare () {
+
+        function addFlare() {
             var flare = flareObject.clone();
 
             var scale = 1 - parseInt(Math.random() * 4) / 10;
@@ -172,7 +172,8 @@
             flare.speed = (Math.PI - Math.random() * Math.PI / 5) / 100;
 
             return flare;
-        };
+        }
+        ;
 
         ON_DAED["3D"].register(scene, objetoSol, function () {
             var anim = ++factSolAnimacao / mod;
@@ -485,22 +486,22 @@
 
         scene.add(camera);
 
-		(function() {
-			var width = window.innerWidth;
-			var height = window.innerHeight;
+        (function () {
+            var width = window.innerWidth;
+            var height = window.innerHeight;
 
-			setInterval(function () {
-				if ((width != window.innerWidth) || (height != window.innerHeight)) {
-					width = window.innerWidth;
-					height = window.innerHeight;
+            setInterval(function () {
+                if ((width !== window.innerWidth) || (height !== window.innerHeight)) {
+                    width = window.innerWidth;
+                    height = window.innerHeight;
 
-					camera.aspect = width / height;
-					camera.updateProjectionMatrix();
+                    camera.aspect = width / height;
+                    camera.updateProjectionMatrix();
 
-					renderer.setSize(width, height);
-				}
-			}, 300);
-		})();
+                    renderer.setSize(width, height);
+                }
+            }, 300);
+        })();
 
         // controls, return camera control if any
         if (controls instanceof Function) {
@@ -517,7 +518,19 @@
             renderer.setClearColor(color);
         }
 
-        ON_DAED['3D'].START_RENDER = rendering;
+        ON_DAED['3D'].START_RENDER = function() {
+            
+            var width = window.innerWidth;
+            var height = window.innerHeight;
+
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+
+            renderer.setSize(width, height);
+            
+            rendering();
+            
+        };
 
         return {
             scene: scene

@@ -433,15 +433,15 @@ ON_DAED['3D'].AnimacaoPiramideIdle = function (scene, autoTransicao, notUseKeys)
         })();
     }
 
-    loadPlaneta("CARTA MAGNÉTICA - INTENSIDADE", "lib/on-daed-js/imgs/texturas/terra/carta-magnetica-intensidade.png", "sounds/carta-magnetica-intensidade.mp3", function (planeta, obj) {
+    /*loadPlaneta("CARTA MAGNÉTICA - INTENSIDADE", "lib/on-daed-js/imgs/texturas/terra/carta-magnetica-intensidade.png", "sounds/carta-magnetica-intensidade.mp3", function (planeta, obj) {
         obj.s = 0.9;
-    });
+    });*/
 
     loadPlaneta("CARTA MAGNÉTICA - DECLINAÇÃO", "lib/on-daed-js/imgs/texturas/terra/carta-magnetica-declinacao.png", "sounds/carta-magnetica-declinacao.mp3", function (planeta, obj) {
         obj.s = 0.9;
     });
 
-    loadPlaneta("CARTA MAGNÉTICA - INCLINAÇÃO", "lib/on-daed-js/imgs/texturas/terra/carta-magnetica-inclinacao.png", "sounds/carta-magnetica-inclinacao.mp3", function (planeta, obj) {
+    /*loadPlaneta("CARTA MAGNÉTICA - INCLINAÇÃO", "lib/on-daed-js/imgs/texturas/terra/carta-magnetica-inclinacao.png", "sounds/carta-magnetica-inclinacao.mp3", function (planeta, obj) {
         obj.s = 0.9;
     });
 
@@ -455,7 +455,7 @@ ON_DAED['3D'].AnimacaoPiramideIdle = function (scene, autoTransicao, notUseKeys)
 
     loadPlaneta("CARTA MAGNÉTICA - VARIAÇÃO SECULAR DE INCLINAÇÃO", "lib/on-daed-js/imgs/texturas/terra/carta-magnetica-variacao-inclinacao.png", "sounds/carta-magnetica-variacao-inclinacao.mp3", function (planeta, obj) {
         obj.s = 0.75;
-    });
+    });*/
 
     loadPlaneta("PLANETA MERCÚRIO", "lib/on-daed-js/imgs/texturas/planetas/mercury.jpg", "sounds/mercurio.mp3");
 

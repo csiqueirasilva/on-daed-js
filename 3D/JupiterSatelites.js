@@ -108,10 +108,10 @@
 		getSDM.send();
 	};
 
-	var TRACE_V_STEP = 0.1;
+	var TRACE_V_STEP = 0.025;
 
 	JupiterSatellites.prototype.addSatellites = function () {
-		this.tracer = new PhysWrapperTrace(4000, 0, TRACE_V_STEP, 0);
+		this.tracer = new PhysWrapperTrace(500, 0, TRACE_V_STEP * 15, 0);
 		
 		this.scene.add(this.tracer);
 		
@@ -176,7 +176,9 @@
 			this.tracer.updateTrace();
 		}
 		
-		this.update((oT + max) / 2, true);
+		this.update(oT + t / 2);
+		this.tracer.position.y /= 2;
+		this.tracer.position.y += TRACE_V_STEP * 4;
 	};
 
 	JupiterSatellites.prototype.addJupiter = function () {
@@ -195,10 +197,6 @@
 		for(var i = 0; i < this.satellites.length; i++) {
 			var sat = this.satellites[i];
 			sat.setPositionByT(t);
-		}
-		
-		if(updateTraceHeight) {
-			this.tracer.position.y = t;
 		}
 		
 	};

@@ -1,79 +1,256 @@
-ON_DAED["3D"].JupiterSatelites = function (scene) {
-	
+(function () {
+
 	var UNIT = 1 / 18216;
 	var JUPITER_RADIUS = 69911 * UNIT;
+
+	var EARTH_ORBIT_RADIUS = 149597870.7;
+	var AU_KM = EARTH_ORBIT_RADIUS * UNIT;
+
+	var IO_RADIUS = 1821.3 * UNIT;
+	var IO_ORBIT_RADIUS = 421769 * UNIT;
+	var IO_ORBITAL_PERIOD = 1.769138;
+	var IO_ORBIT_INCLINATION = 0.036 * Math.PI / 180;
+
+	var EUROPA_RADIUS = 1565 * UNIT;
+	var EUROPA_ORBIT_RADIUS = 671079 * UNIT;
+	var EUROPA_ORBITAL_PERIOD = 3.551810;
+	var EUROPA_ORBIT_INCLINATION = 0.464 * Math.PI / 180;
+
+	var GANYMEDE_RADIUS = 2634 * UNIT;
+	var GANYMEDE_ORBIT_RADIUS = 1070042 * UNIT;
+	var GANYMEDE_ORBITAL_PERIOD = 7.154553;
+	var GANYMEDE_ORBIT_INCLINATION = 0.186 * Math.PI / 180;
 	
-	var IO_RADIUS = 1821.6 * UNIT;
-	var IO_ORBIT_RADIUS = 421700 * UNIT;
+	var CALLISTO_RADIUS = 2403 * UNIT;
+	var CALLISTO_ORBIT_RADIUS = 1883000 * UNIT;
+	var CALLISTO_ORBITAL_PERIOD = 16.689018;
+	var CALLISTO_ORBIT_INCLINATION = 0.281 * Math.PI / 180;
 
-	var EUROPA_RADIUS = 1560.8 * UNIT;
-	var EUROPA_ORBIT_RADIUS = 670900 * UNIT;
+	var SUN_SCALE = 1;
+
+	var SUN_JUPITER_DISTANCE = EARTH_ORBIT_RADIUS * 5.3 * UNIT;
+
+	var SHADOW_PLANE_SIZE = SUN_JUPITER_DISTANCE;
+
+	function JupiterModelBody (radius, orbitRadius, period) {
+		this.t = 0;
+		this.originalT = 0;
+		this.radius = radius;
+		this.orbitRadius = orbitRadius;
+		this.period = period;
+		this.element = null;
+	}
+
+	JupiterModelBody.prototype.vectorToParametric = function vectorToParametric(x, y) {
+		this.originalT = Math.atan2(y, x);
+		
+		this.element.position.set(x, 0, y);
+	};
 	
-	var GANYMEDE_RADIUS = 2634.1 * UNIT;
-	var GANYMEDE_ORBIT_RADIUS = 1070400 * UNIT;
+	JupiterModelBody.prototype.setPositionByT = function setPositionByT (t) {
+		var bufT = (t / this.period) * Math.PI * 2;
+		
+		this.t = this.originalT + bufT;
+		
+		this.element.position.set(this.orbitRadius * Math.cos(this.t), 0, this.orbitRadius * Math.sin(this.t));
+	};
 	
-	var CALLISTO_RADIUS = 2410.3 * UNIT;
-	var CALLISTO_ORBIT_RADIUS = 1882700 * UNIT;
+	JupiterModelBody.prototype.initMesh = function (texturePath, parent, zRotation) {
+		this.element = new THREE.Mesh(
+			new THREE.SphereGeometry(this.radius, 64, 32),
+			new THREE.MeshLambertMaterial({
+				map: THREE.ImageUtils.loadTexture(texturePath)
+			})
+		);
 	
-	var o = {};
-
-	var wrapper = new THREE.Object3D();
+		this.element.castShadow = this.element.receiveShadow = true;
 	
-	var jupiter = new THREE.Mesh(
-		new THREE.SphereGeometry(JUPITER_RADIUS, 64, 32),
-		new THREE.MeshLambertMaterial({
-			map: THREE.ImageUtils.loadTexture('imgs/texturas/planetas/jupiter.jpg')
-		})
-	);
+		var wrapper = new THREE.Object3D();
+		//this.element.add(MathHelper.buildAxes(100));
+		//wrapper.rotation.z = zRotation;
+		
+		wrapper.add(this.element);
+		
+		parent.add(wrapper);
+	};
 
-	wrapper.add(jupiter);
+	function JupiterSatellites(scene) {
+		this.scene = scene;
+		this.wrapper = new THREE.Object3D();
 
-	ON_DAED["3D"].ativarFlaresSol();
+		this.tracer = null;
+		this.satellites = [];
 
-	var light = new THREE.DirectionalLight(0xFFFFFF, 1);
-	
-	var shadowPlaneSize = 100;
-	
-	light.shadowCameraLeft = -shadowPlaneSize;
-	light.shadowCameraRight = shadowPlaneSize;
-	light.shadowCameraTop = shadowPlaneSize;
-	light.shadowCameraBottom = -shadowPlaneSize;
+		this.t = 0;
+		this.epochDate = 0;
 
-	light.shadowDarkness = 0.5;
+		this.addJupiter();
+		this.addSun();
+		this.addSatellites();
 
-	light.shadowCameraNear = 1;
-	light.shadowCameraFar = shadowPlaneSize * 2;
+		//this.wrapper.add(MathHelper.buildAxes(1000));
 
-	light.shadowMapWidth = 2048;
-	light.shadowMapHeight = 2048;
-	
-	light.target = jupiter;
-	
-	light.castShadow = true;
-	
-	var lightHelper = new THREE.CameraHelper( light.shadow.camera );
-	scene.add(lightHelper);
-	
-	jupiter.receiveShadow = true;
-	jupiter.castShadow = true;
-	
-	var sol = ON_DAED["3D"].criarSol(wrapper);
+		scene.add(this.wrapper);
+	}
 
-	var SUN_SCALE = (1 / 90);
+	JupiterSatellites.prototype.fetchNetworkData = function fetchNetworkData(url, callback) {
 
-	sol.scale.multiplyScalar( SUN_SCALE );
+		var getSDM = new XMLHttpRequest();
+		getSDM.onreadystatechange = function (data) {
+			if (getSDM.readyState == 4 && getSDM.status == 200) {
+				if (callback instanceof Function) {
+					callback(JSON.parse(getSDM.responseText));
+				}
+			}
+		};
 
-	ON_DAED['3D'].register(scene, light, function() {
-		light.position.copy(sol.localToWorld(sol.position.clone()));
-	});
+		getSDM.open("GET", url, true);
+		getSDM.send();
+	};
 
-	light.position.copy(sol.position);
+	var TRACE_V_STEP = 0.1;
 
-	sol.position.set(90, 0, 0);
+	JupiterSatellites.prototype.addSatellites = function () {
+		this.tracer = new PhysWrapperTrace(4000, 0, TRACE_V_STEP, 0);
+		
+		this.scene.add(this.tracer);
+		
+		var IO = new JupiterModelBody(IO_RADIUS, IO_ORBIT_RADIUS, IO_ORBITAL_PERIOD);
+		IO.initMesh('lib/on-daed-js/imgs/texturas/satelites/io.jpg', this.jupiter, IO_ORBIT_INCLINATION);
+		var x = 2.994183236154027E-04 * AU_KM;
+		var y = -2.809389273056349E-03 * AU_KM;
+		var z = -9.525760463609053E-05 * AU_KM;
+		IO.vectorToParametric(x, y);
+		
+		this.satellites.push(IO);
+		
+		this.tracer.addTracingLine(IO.element, 0xFFFF00);
+		
+		var EUROPA = new JupiterModelBody(EUROPA_RADIUS, EUROPA_ORBIT_RADIUS, EUROPA_ORBITAL_PERIOD);
+		EUROPA.initMesh('lib/on-daed-js/imgs/texturas/satelites/europa.jpg', this.jupiter, EUROPA_ORBIT_INCLINATION);
+		var x = -4.225204973454476E-03 * AU_KM;
+		var y = 1.455042185336467E-03 * AU_KM;
+		var z = -2.034089333849075E-05 * AU_KM;
+		EUROPA.vectorToParametric(x, y);
 
-	wrapper.add(MathHelper.buildAxes(1000));
+		this.satellites.push(EUROPA);
+		
+		this.tracer.addTracingLine(EUROPA.element, 0xFFFFFF);
 
-	scene.add(wrapper);
+		var GANYMEDE = new JupiterModelBody(GANYMEDE_RADIUS, GANYMEDE_ORBIT_RADIUS, GANYMEDE_ORBITAL_PERIOD);
+		GANYMEDE.initMesh('lib/on-daed-js/imgs/texturas/satelites/ganymede.jpg', this.jupiter, GANYMEDE_ORBIT_INCLINATION);
+		var x = -6.923432356916074E-03 * AU_KM;
+		var y = -1.815842447905196E-03 * AU_KM;
+		var z = -1.446996387050033E-04 * AU_KM;
+		GANYMEDE.vectorToParametric(x, y);
+		
+		this.satellites.push(GANYMEDE);
+		
+		this.tracer.addTracingLine(GANYMEDE.element, 0x00FF00);
 
-	return o;
-};
+		var CALLISTO = new JupiterModelBody(CALLISTO_RADIUS, CALLISTO_ORBIT_RADIUS, CALLISTO_ORBITAL_PERIOD);
+		CALLISTO.initMesh('lib/on-daed-js/imgs/texturas/satelites/callisto.jpg', this.jupiter, CALLISTO_ORBIT_INCLINATION);
+		var x = 4.451900573111861E-03 * AU_KM;
+		var y = 1.173723889040994E-02 * AU_KM;
+		var z = 4.419630575197735E-04 * AU_KM;
+		CALLISTO.vectorToParametric(x, y);
+		
+		this.satellites.push(CALLISTO);
+		
+		this.tracer.addTracingLine(CALLISTO.element, 0xFF00FF);
+	};
+
+	JupiterSatellites.prototype.traceLines = function (oT) {
+		
+		oT = oT || 0;
+		
+		this.update(oT);
+		
+		this.tracer.initTrace();
+		
+		var max = 10;
+		var step = TRACE_V_STEP;
+		
+		for(var t = step; t < max; t = t + step) {
+			this.update(oT + t);
+			this.tracer.updateTrace();
+		}
+		
+		this.update((oT + max) / 2, true);
+	};
+
+	JupiterSatellites.prototype.addJupiter = function () {
+		this.jupiter = new THREE.Mesh(
+			new THREE.SphereGeometry(JUPITER_RADIUS, 64, 32),
+			new THREE.MeshLambertMaterial({
+				map: THREE.ImageUtils.loadTexture('lib/on-daed-js/imgs/texturas/planetas/jupiter.jpg')
+			})
+		);
+
+		this.wrapper.add(this.jupiter);
+	};
+
+	JupiterSatellites.prototype.update = function (t, updateTraceHeight) {
+		
+		for(var i = 0; i < this.satellites.length; i++) {
+			var sat = this.satellites[i];
+			sat.setPositionByT(t);
+		}
+		
+		if(updateTraceHeight) {
+			this.tracer.position.y = t;
+		}
+		
+	};
+
+	JupiterSatellites.prototype.addEarth = function () {
+
+	};
+
+	JupiterSatellites.prototype.addSun = function () {
+		ON_DAED["3D"].ativarFlaresSol();
+
+		var light = new THREE.DirectionalLight(0xFFFFFF, 1);
+
+		light.shadowCameraLeft = -SHADOW_PLANE_SIZE;
+		light.shadowCameraRight = SHADOW_PLANE_SIZE;
+		light.shadowCameraTop = SHADOW_PLANE_SIZE;
+		light.shadowCameraBottom = -SHADOW_PLANE_SIZE;
+
+		light.shadowDarkness = 0.5;
+
+		light.shadowCameraNear = 1;
+		light.shadowCameraFar = SHADOW_PLANE_SIZE * 4;
+
+		light.shadowMapWidth = 2048;
+		light.shadowMapHeight = 2048;
+
+		light.target = this.jupiter;
+
+		light.castShadow = true;
+
+		var lightHelper = new THREE.CameraHelper(light.shadow.camera);
+		//this.scene.add(lightHelper);
+
+		this.jupiter.receiveShadow = true;
+		this.jupiter.castShadow = true;
+
+		var wrapperSol = new THREE.Object3D();
+		var sol = ON_DAED["3D"].criarSol(wrapperSol);
+
+		sol.scale.multiplyScalar(SUN_SCALE);
+
+		ON_DAED['3D'].register(this.scene, light, function () {
+			light.position.copy(sol.localToWorld(sol.position.clone()));
+		});
+
+		sol.position.set(SUN_JUPITER_DISTANCE, 0, 0);
+
+		wrapperSol.rotation.z = -6.09 * Math.PI / 180;
+
+		this.wrapper.add(wrapperSol);
+	};
+
+	ON_DAED["3D"].JupiterSatelites = JupiterSatellites;
+
+})();

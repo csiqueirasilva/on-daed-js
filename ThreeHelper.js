@@ -42,6 +42,22 @@ ThreeHelper = {};
 
 })();
 
+ThreeHelper.textureCircle = function textureCircle () {
+	var canvasCircle = document.createElement('canvas');
+	canvasCircle.width = canvasCircle.height = 512;
+	var ctx = canvasCircle.getContext('2d');
+	ctx.strokeStyle = '#ffffff';
+	ctx.lineWidth = 20;
+	ctx.beginPath();
+	ctx.arc(canvasCircle.width / 2,canvasCircle.height / 2, canvasCircle.height / 2 - 10, 0, 2*Math.PI);
+	ctx.stroke();
+
+	var texture = new THREE.Texture(canvasCircle);
+	texture.needsUpdate = true;
+
+	return texture;
+};
+
 ThreeHelper.getWorldCoords = function (element, camera) {
     var coords = new THREE.Vector3();
     var projector = new THREE.Projector();

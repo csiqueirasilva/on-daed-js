@@ -10,21 +10,25 @@
 	var IO_ORBIT_RADIUS = 421769 * UNIT;
 	var IO_ORBITAL_PERIOD = 1.769138;
 	var IO_ORBIT_INCLINATION = 0.036 * Math.PI / 180;
+	var IO_COLOR = 0xFFFF00;
 
 	var EUROPA_RADIUS = 1565 * UNIT;
 	var EUROPA_ORBIT_RADIUS = 671079 * UNIT;
 	var EUROPA_ORBITAL_PERIOD = 3.551810;
 	var EUROPA_ORBIT_INCLINATION = 0.464 * Math.PI / 180;
-
+	var EUROPA_COLOR = 0xffffff;
+		
 	var GANYMEDE_RADIUS = 2634 * UNIT;
 	var GANYMEDE_ORBIT_RADIUS = 1070042 * UNIT;
 	var GANYMEDE_ORBITAL_PERIOD = 7.154553;
 	var GANYMEDE_ORBIT_INCLINATION = 0.186 * Math.PI / 180;
+	var GANYMEDE_COLOR = 0x00FF00;
 	
 	var CALLISTO_RADIUS = 2403 * UNIT;
 	var CALLISTO_ORBIT_RADIUS = 1883000 * UNIT;
 	var CALLISTO_ORBITAL_PERIOD = 16.689018;
 	var CALLISTO_ORBIT_INCLINATION = 0.281 * Math.PI / 180;
+	var CALLISTO_COLOR = 0xFF00FF;
 
 	var SUN_SCALE = 1;
 
@@ -32,12 +36,15 @@
 
 	var SHADOW_PLANE_SIZE = SUN_JUPITER_DISTANCE;
 
-	function JupiterModelBody (radius, orbitRadius, period) {
+	var TEXTURE_CIRCLE = ThreeHelper.textureCircle();
+
+	function JupiterModelBody (radius, orbitRadius, period, color) {
 		this.t = 0;
 		this.originalT = 0;
 		this.radius = radius;
 		this.orbitRadius = orbitRadius;
 		this.period = period;
+		this.color = color;
 		this.element = null;
 	}
 
@@ -63,12 +70,22 @@
 			})
 		);
 	
+		this.circleSelection = new THREE.Sprite(new THREE.SpriteMaterial({
+			map: TEXTURE_CIRCLE,
+			transparent: true,
+			depthTest: false,
+			color: this.color
+		}));
+	
+		this.circleSelection.scale.multiplyScalar(5);
+	
 		this.element.castShadow = this.element.receiveShadow = true;
 	
 		var wrapper = new THREE.Object3D();
 		//this.element.add(MathHelper.buildAxes(100));
 		//wrapper.rotation.z = zRotation;
 		
+		this.element.add(this.circleSelection);
 		wrapper.add(this.element);
 		
 		parent.add(wrapper);
@@ -115,7 +132,7 @@
 		
 		this.scene.add(this.tracer);
 		
-		var IO = new JupiterModelBody(IO_RADIUS, IO_ORBIT_RADIUS, IO_ORBITAL_PERIOD);
+		var IO = new JupiterModelBody(IO_RADIUS, IO_ORBIT_RADIUS, IO_ORBITAL_PERIOD, IO_COLOR);
 		IO.initMesh('lib/on-daed-js/imgs/texturas/satelites/io.jpg', this.jupiter, IO_ORBIT_INCLINATION);
 		var x = 2.994183236154027E-04 * AU_KM;
 		var y = -2.809389273056349E-03 * AU_KM;
@@ -124,9 +141,9 @@
 		
 		this.satellites.push(IO);
 		
-		this.tracer.addTracingLine(IO.element, 0xFFFF00);
+		this.tracer.addTracingLine(IO.element, IO_COLOR);
 		
-		var EUROPA = new JupiterModelBody(EUROPA_RADIUS, EUROPA_ORBIT_RADIUS, EUROPA_ORBITAL_PERIOD);
+		var EUROPA = new JupiterModelBody(EUROPA_RADIUS, EUROPA_ORBIT_RADIUS, EUROPA_ORBITAL_PERIOD, EUROPA_COLOR);
 		EUROPA.initMesh('lib/on-daed-js/imgs/texturas/satelites/europa.jpg', this.jupiter, EUROPA_ORBIT_INCLINATION);
 		var x = -4.225204973454476E-03 * AU_KM;
 		var y = 1.455042185336467E-03 * AU_KM;
@@ -135,9 +152,9 @@
 
 		this.satellites.push(EUROPA);
 		
-		this.tracer.addTracingLine(EUROPA.element, 0xFFFFFF);
+		this.tracer.addTracingLine(EUROPA.element, EUROPA_COLOR);
 
-		var GANYMEDE = new JupiterModelBody(GANYMEDE_RADIUS, GANYMEDE_ORBIT_RADIUS, GANYMEDE_ORBITAL_PERIOD);
+		var GANYMEDE = new JupiterModelBody(GANYMEDE_RADIUS, GANYMEDE_ORBIT_RADIUS, GANYMEDE_ORBITAL_PERIOD, GANYMEDE_COLOR);
 		GANYMEDE.initMesh('lib/on-daed-js/imgs/texturas/satelites/ganymede.jpg', this.jupiter, GANYMEDE_ORBIT_INCLINATION);
 		var x = -6.923432356916074E-03 * AU_KM;
 		var y = -1.815842447905196E-03 * AU_KM;
@@ -146,9 +163,9 @@
 		
 		this.satellites.push(GANYMEDE);
 		
-		this.tracer.addTracingLine(GANYMEDE.element, 0x00FF00);
+		this.tracer.addTracingLine(GANYMEDE.element, GANYMEDE_COLOR);
 
-		var CALLISTO = new JupiterModelBody(CALLISTO_RADIUS, CALLISTO_ORBIT_RADIUS, CALLISTO_ORBITAL_PERIOD);
+		var CALLISTO = new JupiterModelBody(CALLISTO_RADIUS, CALLISTO_ORBIT_RADIUS, CALLISTO_ORBITAL_PERIOD, CALLISTO_COLOR);
 		CALLISTO.initMesh('lib/on-daed-js/imgs/texturas/satelites/callisto.jpg', this.jupiter, CALLISTO_ORBIT_INCLINATION);
 		var x = 4.451900573111861E-03 * AU_KM;
 		var y = 1.173723889040994E-02 * AU_KM;
@@ -157,7 +174,7 @@
 		
 		this.satellites.push(CALLISTO);
 		
-		this.tracer.addTracingLine(CALLISTO.element, 0xFF00FF);
+		this.tracer.addTracingLine(CALLISTO.element, CALLISTO_COLOR);
 	};
 
 	JupiterSatellites.prototype.setCameraPosition = function setCameraPosition (camera, pos) {
@@ -169,7 +186,7 @@
 		
 		camera.lookAt(new THREE.Vector3(0, 0, 0));
 		
-		camera.fov = 0.35;
+		camera.fov = 0.23;
 		
 		camera.updateProjectionMatrix();
 	};

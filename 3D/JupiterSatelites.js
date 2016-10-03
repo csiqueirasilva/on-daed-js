@@ -160,6 +160,20 @@
 		this.tracer.addTracingLine(CALLISTO.element, 0xFF00FF);
 	};
 
+	JupiterSatellites.prototype.setCameraPosition = function setCameraPosition (camera, pos) {
+		var p = pos.clone();
+		
+		p.multiplyScalar(AU_KM);
+		
+		camera.position.copy(p);
+		
+		camera.lookAt(new THREE.Vector3(0, 0, 0));
+		
+		camera.fov = 0.35;
+		
+		camera.updateProjectionMatrix();
+	};
+
 	JupiterSatellites.prototype.traceLines = function (oT) {
 		
 		oT = oT || 0;
@@ -242,7 +256,8 @@
 			light.position.copy(sol.localToWorld(sol.position.clone()));
 		});
 
-		sol.position.set(SUN_JUPITER_DISTANCE, 0, 0);
+		sol.position.set(-4.003460455018916E+00, 1.018232818636885E-01, -2.935353231225851E+00);
+		sol.position.multiplyScalar(AU_KM);
 
 		wrapperSol.rotation.z = -6.09 * Math.PI / 180;
 

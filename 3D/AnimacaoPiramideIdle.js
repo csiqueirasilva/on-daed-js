@@ -15,6 +15,7 @@ ON_DAED['3D'].AnimacaoPiramideIdle = function (scene, autoTransicao, notUseKeys)
     var usuarioDetectadoAudio = null;
     var usuarioDetectado = false;
     var fadeOutTimer = null;
+    var transitarModelo = true;
 
     var audioTransicao = null;
 
@@ -120,6 +121,8 @@ ON_DAED['3D'].AnimacaoPiramideIdle = function (scene, autoTransicao, notUseKeys)
                 transicaoModelo(true);
             } else if (value === 'x') {
                 transicaoModelo();
+            } else if (value === 'q') {
+                transitarModelo = !transitarModelo;
             }
 
         });
@@ -695,7 +698,7 @@ ON_DAED['3D'].AnimacaoPiramideIdle = function (scene, autoTransicao, notUseKeys)
 
             timestamp = new Date().getTime();
 
-            if (timestamp - ultTimestamp >= delayTransicao) {
+            if (timestamp - ultTimestamp >= delayTransicao && transitarModelo) {
                 ultTimestamp = timestamp;
                 transicaoModelo();
             }

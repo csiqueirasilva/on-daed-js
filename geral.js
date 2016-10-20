@@ -10,25 +10,15 @@ var ON_DAED = (function () {
     };
 
 	o.diaDoAnoFloat = function (dt) {
-		var start = new Date(dt.getFullYear(), 0, 0);
+		var start = new Date(dt.getFullYear(), 0, 1);
 		var diff = dt - start;
 		var umDia = 8.64e7;
-		return diff / umDia - 1;
+		return diff / umDia;
 	};
 
 	o.qtdDiasAno = function(dt) {
 		var year = dt.getFullYear();
-		var ret;
-		if(year % 4 !== 0) {
-			ret = 365;
-		} else if (year % 100 !== 0) {
-			ret = 366;
-		} else if (year % 400 !== 0) {
-			ret = 365;
-		} else {
-			ret = 366;
-		}
-		return ret;
+		return (new Date(year, 11, 31) - new Date(year, 0, 0)) / 8.64e7;
 	};
 
     o.dataJuliana = function () {

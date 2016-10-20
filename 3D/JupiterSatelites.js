@@ -50,7 +50,7 @@
 		this.element = null;
 	}
 
-	JupiterModelBody.prototype.vectorToParametric = function vectorToParametric(x, y) {
+	JupiterModelBody.prototype.vectorToParametric = function vectorToParametric(x, y, z) {
 		this.originalT = Math.atan2(y, x);
 
 		this.element.position.set(x, 0, y);
@@ -100,6 +100,11 @@
 		parent.add(wrapper);
 	};
 
+	JupiterModelBody.prototype.importData = function importData (data) {
+		this.vectorToParametric(parseFloat(data.x), parseFloat(data.y), parseFloat(data.z));
+		this.t = 0;
+	};
+
 	function JupiterSatellites(scene, control) {
 		this.scene = scene;
 		this.control = control;
@@ -115,14 +120,33 @@
 		this.started = false;
 
 		this.addJupiter();
-		var sun = this.addSun();
+		this.sun = this.addSun();
+		this.sun.visible = false;
 		this.addSatellites();
-		this.addEarth(sun);
+		this.addEarth(this.sun);
 
 		//this.wrapper.add(MathHelper.buildAxes(1000));
 
 		this.registerSceneElement(scene);
 	}
+	
+	JupiterSatellites.prototype.updateFromData = function updateFromData (data) {
+		var s = this.sun;
+		var e = this.earth;
+		
+		var sunResults = data.results[0];
+		s.position.set(parseFloat(sunResults.x), parseFloat(sunResults.z), parseFloat(sunResults.y));
+		s.position.multiplyScalar(AU_KM);
+
+		for(var i = 1; i <= 4; i++) {
+			this.satellites[i - 1].importData(data.results[i]);
+		}
+
+		e.importData(data.results[5]);
+		
+		this.setEarthCameraPos();
+		this.traceLines(0);
+	};
 
 	JupiterSatellites.prototype.registerSceneElement = function (scene) {
 
@@ -171,7 +195,7 @@
 		var x = 2.994183236154027E-04 * AU_KM;
 		var y = -2.809389273056349E-03 * AU_KM;
 		var z = -9.525760463609053E-05 * AU_KM;
-		IO.vectorToParametric(x, y);
+		IO.vectorToParametric(x, y, z);
 
 		this.satellites.push(IO);
 
@@ -182,7 +206,7 @@
 		var x = -4.225204973454476E-03 * AU_KM;
 		var y = 1.455042185336467E-03 * AU_KM;
 		var z = -2.034089333849075E-05 * AU_KM;
-		EUROPA.vectorToParametric(x, y);
+		EUROPA.vectorToParametric(x, y, z);
 
 		this.satellites.push(EUROPA);
 
@@ -193,7 +217,7 @@
 		var x = -6.923432356916074E-03 * AU_KM;
 		var y = -1.815842447905196E-03 * AU_KM;
 		var z = -1.446996387050033E-04 * AU_KM;
-		GANYMEDE.vectorToParametric(x, y);
+		GANYMEDE.vectorToParametric(x, y, z);
 
 		this.satellites.push(GANYMEDE);
 
@@ -204,7 +228,7 @@
 		var x = 4.451900573111861E-03 * AU_KM;
 		var y = 1.173723889040994E-02 * AU_KM;
 		var z = 4.419630575197735E-04 * AU_KM;
-		CALLISTO.vectorToParametric(x, y);
+		CALLISTO.vectorToParametric(x, y, z);
 
 		this.satellites.push(CALLISTO);
 
@@ -273,7 +297,7 @@
 
 		var EARTH = new JupiterModelBody(0, AU_KM, EARTH_ORBITAL_PERIOD, 0);
 		EARTH.initObject3D(sun, EARTH_ORBITAL_INCLINATION_TO_JUPITER);
-		EARTH.vectorToParametric(x, y);
+		EARTH.vectorToParametric(x, y, z);
 
 		this.earth = EARTH;
 	};

@@ -250,21 +250,21 @@
 
 		oT = oT || 0;
 
+//		this.tracer.initTrace();
+
+//		var max = 5;
+//		var step = TRACE_V_STEP;
+
+//		this.update(-max);
+
+//		for (var t = -max + step; t < max; t = t + step) {
+//			this.update(oT + t);
+//			this.tracer.updateTrace();
+//		}
+
 		this.update(oT);
-
-		this.tracer.initTrace();
-
-		var max = 10;
-		var step = TRACE_V_STEP;
-
-		for (var t = step; t < max; t = t + step) {
-			this.update(oT + t);
-			this.tracer.updateTrace();
-		}
-
-		this.update(oT + t / 2);
-		this.tracer.position.y /= 2;
-		this.tracer.position.y += TRACE_V_STEP * 4;
+//		this.tracer.position.y /= 2;
+//		this.tracer.position.y += TRACE_V_STEP * 4;
 	};
 
 	JupiterSatellites.prototype.addJupiter = function () {
@@ -286,6 +286,8 @@
 		}
 
 		this.earth.setPositionByT(t);
+		
+		this.setEarthCameraPos();
 	};
 
 	JupiterSatellites.prototype.addEarth = function (sun, earthData) {

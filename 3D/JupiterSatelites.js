@@ -6,7 +6,7 @@
 	var EARTH_RADIUS = 6371;
 	var EARTH_ORBIT_RADIUS = 149597870.7;
 	var EARTH_ORBITAL_PERIOD = 365.25;
-	var EARTH_ORBITAL_INCLINATION_TO_JUPITER = (7.155 - 6.09) * Math.PI / 180; // in relation to sun's equator
+	var EARTH_ORBITAL_INCLINATION_TO_JUPITER = 7.155 * Math.PI / 180; // in relation to sun's equator
 	var AU_KM = EARTH_ORBIT_RADIUS * UNIT;
 
 	var IO_RADIUS = 1821.3 * UNIT;
@@ -149,9 +149,6 @@
 		}
 
 		e.importData(data.results[5]);
-		
-		this.setSunCameraPos();
-		this.traceLines(0);
 	};
 
 	JupiterSatellites.prototype.registerSceneElement = function (scene) {
@@ -259,7 +256,7 @@
 		var max = 5;
 		var step = TRACE_V_STEP;
 
-		this.update(-max);
+		this.update(oT + -max);
 		this.tracer.initTrace();
 
 		for (var t = -max + step; t < max; t = t + step) {
@@ -362,7 +359,7 @@
 		sol.position.set(-4.003460455018916E+00, 1.018232818636885E-01, -2.935353231225851E+00);
 		sol.position.multiplyScalar(AU_KM);
 
-		wrapperSol.rotation.z = 6.09 * Math.PI / 180;
+		wrapperSol.rotation.z = EARTH_ORBITAL_INCLINATION_TO_JUPITER - 6.09 * Math.PI / 180;
 
 		this.wrapper.add(wrapperSol);
 

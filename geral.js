@@ -21,6 +21,15 @@ var ON_DAED = (function () {
 		return (new Date(year, 11, 31) - new Date(year, 0, 0)) / 8.64e7;
 	};
 
+	o.diaDoMesFloat = function (dia, hora, minuto, segundo) {
+		var start = dia - 1 + hora / 24 + minuto / (24 * 60) + segundo / (24 * 60 * 60);
+		return start;
+	};
+
+	o.qtdDiasMes = function(ano, mes) {
+		return new Date(ano, mes, 0).getDate();
+	};
+
     o.dataJuliana = function () {
         return new Date().getTime() / 86400000 + 2440587.5;
     };

@@ -136,6 +136,30 @@
 		this.registerSceneElement(scene);
 	}
 	
+    JupiterSatellites.prototype.getSatelliteColors = function () {
+        var colors = [];
+        
+        colors.push(IO_COLOR.toString(16));
+        colors.push(EUROPA_COLOR.toString(16));
+        colors.push(GANYMEDE_COLOR.toString(16));
+        colors.push(CALLISTO_COLOR.toString(16));
+        
+        var ret = {};
+        
+        for(var i = 0; i < colors.length; i++) {
+            var idx = new String(i + 1);
+            ret[idx] = "";
+            var max = 6 - colors[i].length;
+            for(var j = 0; j < max; j++) {
+                ret[idx] += "0"; 
+            }
+            ret[idx] += colors[i];
+            ret[idx] = '#' + ret[idx]; 
+        }
+        
+        return ret;
+    };
+    
 	JupiterSatellites.prototype.updateFromData = function updateFromData (data) {
 		var s = this.sun;
 		var e = this.earth;
@@ -161,6 +185,7 @@
 					o.control.enableRotate =
 					o.control.enablePan =
 					o.control.enableKeys = false;
+                    o.updateCameraFromPosition();
 				} else {
 					o.control.enableRotate =
 					o.control.enablePan =
@@ -269,6 +294,34 @@
 		this.tracer.position.y /= 2;
 		this.tracer.position.y += TRACE_V_STEP * 4;
 	};
+
+    JupiterSatellites.prototype.setCameraDataCallback = function setCameraDataCallback(cb) {
+        this.cameraDataCallback = cb;
+    };
+
+    JupiterSatellites.prototype.updateCameraFromPosition = function() {
+        if(this.cameraDataCallback instanceof Function) {
+            var data = this.cameraDataCallback();
+            var jd = data.jd;
+            var long = data.long * Math.PI / 180;
+            var lat = data.lat * Math.PI / 180;
+            
+ //           console.log(long, lat);
+            
+            var ts = ON_DAED.ASTRO.getSiderealTimeFromJulian(jd);
+            
+//            var angle = -Math.PI - ts.apparentSiderealTime * 15 * (Math.PI / 180) - long;
+            var angle = lat - Math.PI / 2;
+            
+//            var v = MathHelper.rotateVector(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1), angle);
+ //           this.control.object.up.copy(v);
+            
+            
+            //this.control.object.z = -Math.PI - ts.apparentSiderealTime * 15 * (Math.PI / 180) - long;
+            //console.log(long);
+            //firmamentoB.rotation.z = latitudeUsuario - Math.PI / 2;
+        }
+    };
 
 	JupiterSatellites.prototype.addJupiter = function () {
 		this.jupiter = new THREE.Mesh(

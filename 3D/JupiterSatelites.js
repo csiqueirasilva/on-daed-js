@@ -116,6 +116,9 @@
 		this.control = control;
 		this.wrapper = new THREE.Object3D();
 
+		//this.wrapper.add(MathHelper.buildAxes(1000));
+		this.wrapper.rotation.x = Math.PI / 2;
+
 		this.tracer = null;
 		this.satellites = [];
 
@@ -214,9 +217,9 @@
 	var TRACE_V_STEP = 0.025;
 
 	JupiterSatellites.prototype.addSatellites = function () {
-		this.tracer = new PhysWrapperTrace(500, 0, TRACE_V_STEP * 15, 0);
+		this.tracer = new PhysWrapperTrace(500, 0, TRACE_V_STEP * 20, 0);
 
-		this.scene.add(this.tracer);
+		this.wrapper.add(this.tracer);
 
 		var IO = new JupiterModelBody(IO_RADIUS, IO_ORBIT_RADIUS, IO_ORBITAL_PERIOD, IO_ORBIT_INCLINATION, IO_COLOR);
 		IO.initMesh('lib/on-daed-js/imgs/texturas/satelites/io.jpg', this.jupiter);

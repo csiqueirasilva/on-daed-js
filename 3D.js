@@ -472,7 +472,7 @@
         camera = new THREE.PerspectiveCamera(45, w / h, 1, 10000000000);
 
         // renderer
-        renderer = new THREE.WebGLRenderer({antialias: true, alpha: true, logarithmicDepthBuffer: true});
+        renderer = new THREE.WebGLRenderer({preserveDrawingBuffer: true, antialias: true, alpha: true, logarithmicDepthBuffer: true});
         renderer.domElement.id = 'main-canvas';
         renderer.setClearColor(0x000000, 1);
         renderer.setSize(w, h);

@@ -125,7 +125,7 @@
 		this.t = 0;
 		this.epochDate = 0;
 
-		this.cameraLocked = true;
+		this.cameraLocked = false;
 		this.started = false;
 
 		this.addJupiter();

@@ -15,6 +15,10 @@
             "nome": "Eclipses Solar e Lunar",
             "img": "http://placekitten.com/g/320/180"
         },
+		{
+			"url": "satelites-jupiter",
+			"nome": "Satélites de Júpiter"
+		},
         {
             "url": "equacao-de-kepler",
             "nome": "Equação de Kepler",
